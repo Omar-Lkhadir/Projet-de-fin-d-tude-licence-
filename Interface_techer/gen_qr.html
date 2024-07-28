@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Code QR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #ffffff;
+            margin: 0;
+        }
+
+        .top{
+            background: linear-gradient(to bottom, #0602fa, #b5caff);
+            border-bottom-right-radius: 50px;
+            border-bottom-left-radius: 50px;
+            width: 100%;
+            height: 25%;
+            position: fixed;
+            top: 0;
+            bottom: 10px;
+            right: 0px;
+        }
+        .logo{
+            width: 300px;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 120px;
+        }
+        .titr{
+            color: #0602fa;
+            font-size: 40px;
+            margin-top: 60px;
+            
+        }
+        .temps{
+            font-size: 30px;
+            color: red;
+            position: relative;
+            top: 150px;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+        }
+        #qrcode img{
+            width: 300px;
+            margin-bottom: 12 0px;
+            
+        }
+    
+
+        .fout{
+
+            display: flex;
+            justify-content:space-around;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            padding-left: 80px;
+            background-color:rgb(168, 160, 177) ;
+            padding: 10px;
+            width: 100%;
+            height: 70px;
+            padding-right: 0px;
+            border-top-right-radius: 60px;
+            border-top-left-radius: 60px;
+
+        }
+        .icon{
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        
+        }
+        .baut{
+            background-color: #1814ff;
+            border: none;
+            font-size: 25px;
+            color:white ;
+            margin: 50px;
+            padding: 10px;
+            border-radius: 40px;
+            border: none;
+            border: solid 5px white;
+        }
+        .baut:hover{
+            background-color: #0401b6;
+            transition: 500ms;
+        }
+        .fout img{
+            width: 60px;
+        }
+        .home{
+            background-color: rgb(255, 255, 255);
+            padding: 15px;
+            position: relative;
+            bottom: 15px;
+            border-radius: 40px;
+            height: 60px;
+        }
+
+    @media (min-width: 450px){
+        .titr{
+            position: relative;
+            top: 10%;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 180px;
+        }
+
+        .baut{
+            border: solid 5px white;
+            z-index: 55;
+        }
+    
+        
+    }
+
+
+    </style>
+</head>
+<body>
+    <div class="top"> 
+            
+        <img class="logo" src="/img/logo.png" alt="">
+
+    </div>
+
+
+
+    <div class="container">
+        <h1 class="titr">QR Code Generator </h1>
+        <div id="countdown" class="temps"><span id="timer">Remaining time : 15:00:00</span></div>
+        <button id="generateBtn" class="baut">Generate QR Code</button>
+        <div id="qrcode"></div>
+    </div>
+
+
+
+    <div class="fout">
+        <div class="icon">
+            <a href="env_notif.html"><img src="/img/notif.png" alt=""></a>
+            <a class="home" href="gen_qr.html "><img src="/img/qr-code.png" alt=""></a>
+            <a  href="acceuil_techer.html"><img src="/img/home.png" alt=""></a>
+        </div>
+    </div>
+
+
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+   
+</body>
+</html>
+
+<script>
+
+// Fonction pour formater le temps
+function formatTime(totalSeconds) {
+    var minutes = Math.floor(totalSeconds / 60);
+    var seconds = totalSeconds % 60;
+    return `${pad(minutes)}:${pad(seconds)}`;
+}
+
+// Fonction pour ajouter un zéro devant les chiffres < 10
+function pad(val) {
+    return val < 10 ? `0${val}` : val;
+}
+
+// Fonction pour démarrer le minuteur
+function startCountdown(totalSeconds) {
+    var countdownInterval = setInterval(function() {
+        // Mettre à jour l'affichage du minuteur
+        document.getElementById('timer').innerText = formatTime(totalSeconds);
+
+        // Arrêter le minuteur et afficher le message
+        if (totalSeconds <= 0) {
+            clearInterval(countdownInterval);
+            document.getElementById('timer').innerText = "00:00";
+            alert("Minuteur terminé !");
+        } else {
+            totalSeconds--;
+        }
+    }, 1000);
+}
+
+// Événement du bouton de génération du QR code
+// Événement du bouton de génération du QR code
+// Événement du bouton de génération du QR code
+document.getElementById('generateBtn').addEventListener('click', function() {
+    var qrcodeContainer = document.getElementById('qrcode');
+    qrcodeContainer.innerHTML = ""; // Effacer le code QR précédent
+
+    // Récupérer la date et l'heure locales
+    var now = new Date();
+    var dateStr = formatDate(now);
+    var timeStr = formatTime(now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds());
+
+    var qrContent = `Date: ${dateStr}, Heure: ${timeStr}`;
+
+    // Générer le QR code
+    new QRCode(qrcodeContainer, {
+        text: qrContent,
+        width: 128,
+        height: 128
+    });
+
+    // Démarrer le minuteur de 10 secondes
+    startCountdown(900); // Modifier le paramètre ici pour 10 secondes
+
+    // Enregistrer dans Firebase
+    var database = firebase.database();
+    var qrCodesRef = database.ref('qrCodes');
+
+    // Générer une clé unique pour chaque code QR
+    var newQrCodeRef = qrCodesRef.push();
+    newQrCodeRef.set({
+        date: dateStr,
+        time: timeStr,
+        content: qrContent,
+        status: "En cours" // Ajouter un statut pour indiquer que le code est actif
+    }).then(function() {
+        console.log('Code QR enregistré dans Firebase !');
+    }).catch(function(error) {
+        console.error('Erreur lors de l\'enregistrement du code QR :', error);
+    });
+});
+
+
+
+// Fonction pour formater la date
+function formatDate(date) {
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    return `${pad(day)}/${pad(month)}/${year}`;
+}
+
+
+/*-----------ç______________________________*/
+
+
+// Configuration Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+  authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+  databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+  projectId: "projet-de-fin-d-etude-5f379",
+  storageBucket: "projet-de-fin-d-etude-5f379.appspot.com",
+  messagingSenderId: "819148840374",
+  appId: "1:819148840374:web:c6d0032a611f566937f517"
+};
+
+
+// Initialisation de Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Fonction pour formater le temps en utilisant l'heure UTC
+function formatTime(totalSeconds) {
+    var minutes = Math.floor(totalSeconds / 60);
+    var seconds = totalSeconds % 60;
+    return `${pad(minutes)}:${pad(seconds)}`;
+}
+
+// Fonction pour ajouter un zéro devant les chiffres < 10
+function pad(val) {
+    return val < 10 ? `0${val}` : val;
+}
+
+// Fonction pour démarrer le minuteur
+function startCountdown(totalSeconds) {
+    var countdownInterval = setInterval(function() {
+        // Mettre à jour l'affichage du minuteur
+        document.getElementById('timer').innerText = formatTime(totalSeconds);
+
+        // Arrêter le minuteur et afficher le message
+        if (totalSeconds <= 0) {
+            clearInterval(countdownInterval);
+            document.getElementById('timer').innerText = "00:00";
+            alert("time is over!");
+        } else {
+            totalSeconds--;
+        }
+    }, 1000);
+}
+
+// Événement du bouton de génération du QR code
+document.getElementById('generateBtn').addEventListener('click', function() {
+    var qrcodeContainer = document.getElementById('qrcode');
+    qrcodeContainer.innerHTML = ""; // Effacer le code QR précédent
+
+    // Récupérer la date et l'heure locales
+    var now = new Date();
+    var dateStr = formatDate(now);
+    //(((---------------)))
+    var timeStr = formatTime(now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds());
+
+    var qrContent = `Date: ${dateStr}, Heure: ${timeStr}`;
+
+    // Générer le QR code
+    new QRCode(qrcodeContainer, {
+        text: qrContent,
+        width: 128,
+        height: 128
+    });
+
+    // Démarrer le minuteur de 15 minutes (900 secondes)((((((((((((______________------------___________))))))))))))
+    startCountdown(900);
+
+    // Enregistrer dans Firebase
+    var database = firebase.database();
+    var qrCodesRef = database.ref('qrCodes');
+
+    // Générer une clé unique pour chaque code QR
+    var newQrCodeRef = qrCodesRef.push();
+    newQrCodeRef.set({
+        date: dateStr,
+        time: timeStr,
+        content: qrContent
+    }).then(function() {
+        console.log('Code QR enregistré dans Firebase !');
+    }).catch(function(error) {
+        console.error('Erreur lors de l\'enregistrement du code QR :', error);
+    });
+});
+// Fonction pour formater le temps en HH:MM:SS
+function formatTime(totalSeconds) {
+    var hours = Math.floor(totalSeconds / 3600);
+    var minutes = Math.floor((totalSeconds % 3600) / 60);
+    var seconds = totalSeconds % 60;
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+// Fonction pour ajouter un zéro devant les chiffres < 10
+function pad(val) {
+    return val < 10 ? `0${val}` : val;
+}
+
+// Fonction pour démarrer le minuteur
+function startCountdown(totalSeconds) {
+    var countdownInterval = setInterval(function() {
+        // Mettre à jour l'affichage du minuteur
+        document.getElementById('timer').innerText = formatTime(totalSeconds);
+
+        // Arrêter le minuteur et incrémenter l'absence si le temps est écoulé
+        if (totalSeconds <= 0) {
+            clearInterval(countdownInterval);
+            document.getElementById('timer').innerText = "00:00";
+            alert("time is over");
+
+            // Incrémenter l'absence pour les étudiants qui n'ont pas scanné le QR code
+            incrementAbsences();
+
+        } else {
+            totalSeconds--;
+        }
+    }, 1000);
+}
+
+// Fonction pour formater la date
+function formatDate(date) {
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    return `${pad(day)}/${pad(month)}/${year}`;
+}
+
+// Fonction pour générer le code QR
+document.getElementById('generateBtn').addEventListener('click', function() {
+    var qrcodeContainer = document.getElementById('qrcode');
+    qrcodeContainer.innerHTML = ""; // Effacer le code QR précédent
+
+    // Récupérer la date et l'heure locales
+    var now = new Date();
+    var dateStr = formatDate(now);
+    var timeStr = formatTime(now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds());
+
+    var qrContent = `Date: ${dateStr}, Heure: ${timeStr}`;
+
+    // Générer le QR code
+    new QRCode(qrcodeContainer, {
+        text: qrContent,
+        width: 128,
+        height: 128
+    });
+
+    // Démarrer le minuteur de 15 minutes (900 secondes)
+    startCountdown(900);
+
+    // Enregistrer dans Firebase
+    var database = firebase.database();
+    var qrCodesRef = database.ref('qrCodes');
+
+    // Générer une clé unique pour chaque code QR
+    var newQrCodeRef = qrCodesRef.push();
+    newQrCodeRef.set({
+        date: dateStr,
+        time: timeStr,
+        content: qrContent,
+        status: "En cours" // Ajouter un statut pour indiquer que le code est actif
+    }).then(function() {
+        console.log('Code QR enregistré dans Firebase !');
+    }).catch(function(error) {
+        console.error('Erreur lors de l\'enregistrement du code QR :', error);
+    });
+});
+
+// Fonction pour incrémenter les absences
+function incrementAbsences() {
+    var database = firebase.database();
+    var usersRef = database.ref('user'); // Référence à la collection 'users'
+    var attendanceRef = database.ref('attendance'); // Référence à la collection 'attendance'
+
+    // Récupérer tous les utilisateurs une seule fois
+    usersRef.once('value').then(function(snapshot) {
+        var users = snapshot.val(); // Récupérer les données des utilisateurs
+        var updatePromises = []; // Tableau pour stocker les promesses de mise à jour
+
+        // Pour chaque utilisateur dans la collection 'users'
+        for (var key in users) {
+            if (users.hasOwnProperty(key)) {
+                var user = users[key];
+                if (user.role === 'Student') { // Vérifier si le rôle est 'Student'
+                    (function(user, key) { // Utiliser une fonction immédiate pour capturer les variables user et key
+                        var studentName = user.lastName; // Utiliser lastName comme studentName pour vérifier dans 'attendance'
+                        
+                        // Vérifier si l'utilisateur est déjà présent dans la collection 'attendance'
+                        attendanceRef.orderByChild('studentName').equalTo(studentName).once('value').then(function(attendanceSnapshot) {
+                            if (!attendanceSnapshot.exists()) {
+                                // Si l'utilisateur n'existe pas dans 'attendance', incrémenter le compteur d'absence
+                                var absenceCount = user.absenceCount || 0; // Récupérer le compteur d'absence existant ou initialiser à 0
+                                var updatedAbsenceCount = absenceCount + 1; // Incrémenter le compteur d'absence
+
+                                // Mettre à jour le compteur d'absence dans la collection 'users'
+                                updatePromises.push(
+                                    usersRef.child(key).update({ absenceCount: updatedAbsenceCount })
+                                    .then(function() {
+                                        console.log(`Absence incrémentée pour l'étudiant ${studentName}`); // Succès : Afficher un message de confirmation
+                                    })
+                                    .catch(function(error) {
+                                        console.error(`Erreur lors de l'incrémentation de l'absence pour ${studentName} : `, error); // Erreur : Afficher l'erreur
+                                    })
+                                );
+                            }
+                        });
+                    })(user, key); // Appeler immédiatement la fonction avec les variables capturées
+                }
+            }
+        }
+
+        // Attendre que toutes les mises à jour soient terminées
+        Promise.all(updatePromises).then(function() {
+            console.log('Incrémentation des absences terminée pour tous les étudiants.');
+        }).catch(function(error) {
+            console.error('Erreur lors de l\'incrémentation des absences :', error);
+        });
+    });
+}
+
+
+
+
+
+
+</script>

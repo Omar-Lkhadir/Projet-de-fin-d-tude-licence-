@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Entrer Date, Heure et Module</title>
+    <!-- Inclure les bibliothèques Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-database-compat.js"></script>
+    <script>
+        // Votre configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+            authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+            databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+            projectId: "projet-de-fin-d-etude-5f379",
+            storageBucket: "projet-de-fin-d-etude-5f379.appspot.com",
+            messagingSenderId: "819148840374",
+            appId: "1:819148840374:web:c6d0032a611f566937f517"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Fonction pour ajouter une notification
+        function ajouterNotification() {
+            const date = document.getElementById('date').value;
+            const heure = document.getElementById('heure').value;
+            const module = document.getElementById('module').value;
+
+            if (date && heure && module) {
+                // Générer une clé unique pour chaque entrée
+                const newNotificationKey = database.ref().child('notifications').push().key;
+
+                // Ajouter les données à Realtime Database
+                database.ref('notifications/' + newNotificationKey).set({
+                    date: date,
+                    heure: heure,
+                    module: module
+                })
+                .then(() => {
+                    alert("Notification sent successfully!");
+                })
+                .catch((error) => {
+                    console.error("Erreur lors de l'ajout de la notification: ", error);
+                    alert("Erreur lors de l'ajout de la notification. Voir la console pour plus d'informations.");
+                });
+            } else {
+                alert("Veuillez entrer une date, une heure et un module.");
+            }
+        }
+    </script>
+</head>
+<body>
+
+
+    <div class="top"> 
+            
+        <img class="logo" src="/img/logo.png" alt="">
+
+    </div>
+
+
+    <div class="content">
+
+        <h1>Enter Date, Time and Module of the cancelled session</h1>
+       
+        <div class="box">
+
+            <label for="date">Date:</label>
+            <input class="inp" type="date" id="date" name="date"><br><br>
+            <label  for="heure">Hour:</label>
+            <input class="inp" type="time" id="heure" name="heure"><br><br>
+            <label for="module">Module:</label>
+            <input class="inp" type="text" id="module" name="module"><br><br>
+            <button  class="bt" onclick="ajouterNotification()">Add Notification</button>
+        
+        </div>
+
+    </div>
+
+
+    
+
+    <div class="fout">
+        <div class="icon">
+            <a class="home" href="env_notif.html"><img src="/img/notif.png" alt=""></a>
+            <a  href="gen_qr.html "><img src="/img/qr-code.png" alt=""></a>
+            <a  href="acceuil_techer.html"><img src="/img/home.png" alt=""></a>
+        </div>
+    </div>
+
+
+
+
+    
+
+
+
+
+
+</body>
+</html>
+
+<style>
+
+    body {
+        
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .top{
+        position: fixed;
+        top: 0;
+        background: linear-gradient(to bottom, #0602fa, #b5caff);
+        border-bottom-right-radius: 100px;
+        border-bottom-left-radius: 100px;
+        width: 100%;
+        height: 25%;
+        position: fixed;
+        top: 0; 
+        display: flex;
+        justify-content: flex-start;
+        bottom: 10px;
+        right: 0px;
+    }
+    .logo{
+        width: 700px;
+        height: 600px;
+        background-size: cover;
+        position:relative;
+        right: 180px;
+        bottom: 100px;
+      
+    }
+
+    h1 {
+        text-align: center;
+        margin-top: 20px;
+        color: #1100ff;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        margin-left: 250px;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-size: 50px;
+    }
+
+    .box{
+       position: relative;
+       left: 160px;
+    }
+  
+    .inp{
+        width: 600px;
+        height: 80px;
+        border-radius: 30px;
+        background-color: #1083ff8c;
+    }
+    
+    input{
+        font-size: 40px;
+    }
+
+    button {
+        display: block;
+        width: 400px;
+        height: 80px;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        font-size: 43px;
+        margin-left: 100px;
+        border-radius: 40px;
+    }
+
+    button:hover {
+        background-color: #000a90;
+    }
+
+
+    .content{
+        margin-top: 500px;
+        font-size: 40px;
+    }
+
+    .fout{
+
+        display: flex;
+        justify-content:space-around;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding-left: 80px;
+        background-color:rgb(168, 160, 177) ;
+        padding: 10px;
+        width: 100%;
+        height: 180px;
+        padding-right: 0px;
+        border-top-right-radius: 120px;
+        border-top-left-radius: 120px;
+
+    }
+    .icon{
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+
+    }
+
+    .fout img{
+        width: 150px;
+    }
+    .home{
+        background-color: rgb(255, 255, 255);
+        padding: 15px;
+        position: relative;
+        bottom: 15px;
+        border-radius: 80px;
+        height: 160px;
+    }
+
+    @media (min-width: 1450px){
+        .logo{
+            position: relative;
+            right: 0;
+            height: 200px;
+            width: 250px;
+           margin-top: 55px;
+        }
+        .top{
+            height: 150px;
+           
+        }
+
+        .fout{
+            height: 80px;
+            border-top-right-radius: 80px;
+            border-top-left-radius: 80px;
+
+        }
+        .home{
+            height: 70px;
+        }
+      
+        .fout img{
+            width: 80px;
+        }
+        .content{
+            margin: 0;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            width: 100%;
+            margin-top: 150px;
+
+        }
+        .box{
+       
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            left: 42%;
+        }
+        .inp{
+            width: 250px;
+            height: 40px;
+        }
+        input{
+            font-size: 15px;
+            border: none;
+        }
+        label{
+            font-size: 20px;
+            margin-left: 90px;
+        }
+        button{
+            font-size: 20px;
+            height: 50px;
+            width: 200px;
+            margin-left: 30px;
+        }
+    }
+
+
+    @media (min-device-width: 768px) and (max-device-width: 1024px) {
+        
+        
+        .box{
+            position: relative;
+            bottom: 0;
+            margin-left: 260px;
+            margin-bottom: 00px;
+        }
+        .logo{
+            width: 200px;
+            height: 200px;
+            position: relative;
+            right: 0;
+            bottom:0 ;
+        }
+        .fout{
+            height: 60px;
+
+        }
+        .fout img{
+            width: 60px;
+        }
+        .home{
+            height: 50px;
+        }
+        .content{
+            font-size: 10px;
+            margin: 0;
+            margin-top: 200px;
+        }
+        .inp{
+            width: 200px;
+            height: 30px;
+            border: none;
+            font-size: 18px;
+        }
+        label{
+            font-size: 20px;
+            margin-left: 90px;
+        }
+        button{
+            font-size: 18px;
+            width: 220px;
+            height: 50px;
+            margin-left: 0px;
+        }
+    }
+
+
+    
+
+</style>

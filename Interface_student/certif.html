@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de Fichier vers Firebase</title>
+</head>
+<style>
+
+body{
+    height: 40vh;
+    width: 100%;
+    position: absolute;
+    
+
+}
+
+.content{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.top{
+    background: linear-gradient(to bottom, #0602fa, #b5caff);
+    border-bottom-right-radius: 50px;
+    border-bottom-left-radius: 50px;
+    width: 440px;
+    position: relative;
+    bottom: 10px;
+    right: 10px;
+}
+.logo{
+    width: 120px;
+}
+.corps{
+    position: relative;
+    top: 150px;
+
+}
+.corps h1{
+    font-size: 37px;
+    color: #0602fa;
+
+
+}
+.corps h4{
+    color: red;
+    
+
+}
+
+#fileInput{
+}
+
+.baut{
+    display: flex;
+    flex-direction: column;
+}
+.bt{
+    font-size: 20px;
+    margin: 20px;
+    background-color: #0602fa;
+    color: rgb(255, 255, 255);
+    font-size: 40px;
+    border-radius: 30px;
+    border: none;
+}
+
+.fout{
+        display: flex;
+        justify-content:space-around;
+        position: relative;
+        background-color:rgb(168, 160, 177) ;
+        padding: 10px;
+        width: 374px;
+        top:300px;
+        right: 15px;
+        padding-right: 60px;
+        border-top-right-radius: 60px;
+        border-top-left-radius: 60px;
+
+    }
+    .icon{
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        position: relative;
+        left: 20px;
+    }
+    .fout img{
+        width: 60px;
+      
+    }
+    .home{
+        background-color: rgb(255, 255, 255);
+        padding: 15px;
+        position: relative;
+        bottom: 15px;
+        border-radius: 40px;
+    }
+
+
+    @media (min-width: 450px) {
+        
+        body{
+            height: 100vh;
+        }
+        .top{
+            width: 100%;
+            ;
+        }
+      .fout{
+        background-color: transparent;
+      }
+        .icon{
+            position: fixed;
+            bottom: 0;
+            background-color:rgb(168, 160, 177) ;
+            padding-top: 15px;
+        }
+        .content{
+            display: flex;
+            justify-content: center;
+        }
+        .corps{
+            display: flex;
+            margin-top: 0;
+            flex-direction: column;
+            width: 30%;
+            justify-content: center;
+            margin-left: 40%;
+            position: relative;
+            bottom: 20300px;
+
+        }
+        .bt{
+            width: 400px;
+            position: relative;
+            right: 20px;
+        }
+        .corps h1{
+            font-size: 40px;
+            width: 600px;
+        }
+        .corps h4{
+            font-size: 25px;
+        }
+       
+    }
+   
+
+        
+</style>
+<body>
+
+    <div class="content">
+          
+        <div class="top"> 
+            
+            <img class="logo" src="/img/logo.png" alt="">
+
+        </div>
+
+       
+        <div class="corps">
+
+            <h1> Imported the justificatif </h1>
+            <h4>  NB: Name the document by your name </h4>
+       
+            <div class="baut">
+                <input   type="file" id="fileInput">
+                <button class="bt" onclick="uploadFile()">import</button>
+                <p id="status"></p> <!-- Afficher le statut ici -->
+            </div>
+           
+
+        </div>
+
+      
+    </div>
+
+        
+    <div class="fout">
+            
+        <div class="icon">
+                
+            <a href="rec_notif.html"><img src="/img/notif.png" alt=""></a>      
+            <a class="home" href="scan_code.html"><img src="/img/qr-code.png" alt=""></a>
+            <a  href="acceuil_student.html"><img src="/img/home.png" alt=""></a>
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Firebase App (le SDK principal de Firebase) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <!-- Firebase Storage -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <!-- Firebase Auth (si nécessaire) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <!-- Firebase Firestore (si nécessaire) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+            authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+            databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+            projectId: "projet-de-fin-d-etude-5f379",
+            storageBucket: "projet-de-fin-d-etude-5f379.appspot.com",
+            messagingSenderId: "819148840374",
+            appId: "1:819148840374:web:c6d0032a611f566937f517"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Obtenir une référence au service de stockage
+        const storage = firebase.storage();
+
+        function uploadFile() {
+            // Obtenir le fichier de l'élément input
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) {
+                document.getElementById('status').innerText = 'Veuillez sélectionner un fichier.';
+                return;
+            }
+            
+            // Créer une référence de stockage
+            const storageRef = storage.ref();
+            
+            // Créer une référence au fichier
+            const fileRef = storageRef.child('uploads/' + file.name);
+            
+            // Téléverser le fichier
+            const uploadTask = fileRef.put(file);
+
+            // Enregistrer trois observateurs :
+            // 1. Observateur de changement d'état
+            // 2. Observateur d'erreur
+            // 3. Observateur de complétion
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    // Observer les changements d'état comme le progrès, la pause, la reprise
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById('status').innerText = 'Téléversement à ' + progress.toFixed(2) + '%';
+                }, 
+                (error) => {
+                    // Gérer les échecs de téléversement
+                    document.getElementById('status').innerText = 'Téléversement échoué: ' + error.message;
+                }, 
+                () => {
+                    document.getElementById('status').innerText = 'import succeeds' ;
+                }
+            );
+        }
+    </script>
+</body>
+</html>

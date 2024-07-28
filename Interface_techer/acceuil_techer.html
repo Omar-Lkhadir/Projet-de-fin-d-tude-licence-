@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afficher les Présences</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: auto;
+            background-color: #ffffff;
+            margin: 0;
+        
+        }
+
+
+
+
+
+        .top{
+            background: linear-gradient(to bottom, #0602fa, #b5caff);
+            border-bottom-right-radius: 50px;
+            border-bottom-left-radius: 50px;
+            width: 100%;
+            position: relative;
+            bottom: 10px;
+            right: 0px;
+        }
+        .logo{
+            width: 300px;
+        }
+        .logp{
+            color: rgb(255, 255, 255);
+            background-color: #2c29e4;
+            padding-left : 20px;
+            padding-right : 20px;
+            margin-top: 880px;
+            font-size: 25px;
+            height: 40px;
+            position: relative;
+            right:  30px;
+            text-decoration: none;
+            border: white 4px solid;
+            border-radius: 60px;
+            
+        }
+        .logp:hover{
+            background-color: #4340fd;
+            transition: 500ms;
+        }
+        
+        .titr{
+
+            color: #0602fa;
+          
+   
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            width: 80%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            height: 1002px;
+            
+        }
+
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+             flex-direction: column;
+             align-items: center;
+             height: auto;
+        }
+
+    .container {
+        display: flex;
+        flex: 1; /* Permet au conteneur de s'étendre et de prendre tout l'espace disponible */
+        height: 100%;
+        margin-bottom: 100px;
+    }
+
+        .date-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .total-presences {
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: red
+            ;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        canvas {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 500px;
+          
+            
+        }
+
+
+        
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+    .fout{
+        display: flex;
+        justify-content:space-around;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding-left: 80px;
+        background-color:rgb(168, 160, 177) ;
+        padding: 10px;
+        width: 100%;
+        height: 70px;
+        padding-right: 0px;
+        border-top-right-radius: 60px;
+        border-top-left-radius: 60px;
+
+    }
+    .icon{
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+       
+    }
+    .fout img{
+        width: 60px;
+    }
+    .home{
+        background-color: rgb(255, 255, 255);
+        padding: 15px;
+        position: relative;
+        bottom: 15px;
+        border-radius: 40px;
+        height: 60px;
+    }
+
+    @media (min-width: 450px){
+    
+
+        .top{
+            background: linear-gradient(to bottom, #0602fa, #b5caff);
+            border-bottom-right-radius: 50px;
+            border-bottom-left-radius: 50px;
+            width: 100%;
+            position: relative;
+            bottom: 10px;
+            right: 0px;
+            height: 170px;
+        }
+        .logo{
+            width: 300px;
+        }
+        .container{
+            height: 1000px;
+        }
+
+        canvas {
+            position: relative;
+            left: 15%;
+        }
+        .logp{
+            color: rgb(255, 255, 255);
+            background-color: #2c29e4;
+            padding-left : 20px;
+            padding-right : 20px;
+            margin-top: 880px;
+            font-size: 25px;
+            height: 40px;
+            position: relative;
+            left: 560px;
+            bottom: 60px;
+            text-decoration: none;
+            border: white 4px solid;
+            border-radius: 60px;
+            
+        }
+     
+            
+
+    }
+
+    @media (min-width: 1024px) and (max-width: 450px) {
+    
+    
+        canvas {
+            position: relative;
+            left: 40%;
+        }
+        .logp{
+            position: relative;
+            bottom: 155px;
+            margin-bottom: 115px;
+        }
+     
+    }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="top"> 
+            
+        <img class="logo" src="/img/logo.png" alt="">
+        <a href="/index.html" class="logp" onclick="logout()" > logout </a> 
+
+    </div>
+
+
+    <div class="container">
+
+     
+        <h1 class="titr">List of Attendances</h1>
+        <div id="totalPresences" class="total-presences"></div>
+        <div id="dateHeader" class="date-header"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Hour</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceTableBody">
+                <!-- Les lignes seront ajoutées ici dynamiquement -->
+            </tbody>
+        </table>
+        <canvas id="attendanceChart"></canvas>
+        <button onclick="clearAttendance()">Clear </button>
+
+        <div class="fout">
+            <div class="icon">
+                <a href="env_notif.html"><img src="/img/notif.png" alt=""></a>
+                <a href="gen_qr.html "><img src="/img/qr-code.png" alt=""></a>
+                <a class="home" href="acceuil_techer.html"><img src="/img/home.png" alt=""></a>
+            </div>
+        </div>
+
+    </div>
+
+
+ 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+            authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+            databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+            projectId: "projet-de-fin-d-etude-5f379",
+            storageBucket: "projet-de-fin-d-etude-5f379.appspot.com",
+            messagingSenderId: "819148840374",
+            appId: "1:819148840374:web:c6d0032a611f566937f517"
+        };
+        // Initialisation de Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Fonction pour formater la date
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Fonction pour formater l'heure
+        function formatTime(dateStr) {
+            const date = new Date(dateStr);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            const seconds = date.getSeconds().toString().padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Fonction pour récupérer les labels par minute
+        function getMinuteLabels(startTime, endTime) {
+            const labels = [];
+            let currentTime = new Date(startTime);
+
+            while (currentTime <= endTime) {
+                const hours = currentTime.getHours().toString().padStart(2, '0');
+                const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+                labels.push(`${hours}:${minutes}`);
+                currentTime.setMinutes(currentTime.getMinutes() + 1);
+            }
+
+            return labels;
+        }
+
+        // Fonction pour récupérer et afficher les données de présence
+        function displayAttendance() {
+            var database = firebase.database();
+            var attendanceRef = database.ref('attendance');
+
+            attendanceRef.once('value', function(snapshot) {
+                var attendanceData = snapshot.val();
+                var tableBody = document.getElementById('attendanceTableBody');
+                var dateHeader = document.getElementById('dateHeader');
+                var totalPresencesDiv = document.getElementById('totalPresences');
+                var timeSlots = {};
+                var timeLabels = [];
+                var totalPresences = 0;
+
+                tableBody.innerHTML = ''; // Clear the table body
+
+                if (attendanceData) {
+                    // Formater la date basée sur le premier enregistrement
+                    var firstRecord = Object.values(attendanceData)[0];
+                    dateHeader.textContent = `Date: ${formatDate(firstRecord.timestamp)}`;
+
+                    // Récupérer les labels des minutes
+                    var startTime = new Date(firstRecord.timestamp);
+                    startTime.setMinutes(0);
+                    startTime.setSeconds(0);
+                    var endTime = new Date(startTime);
+                    endTime.setMinutes(59);
+                    timeLabels = getMinuteLabels(startTime, endTime);
+                }
+
+                for (var key in attendanceData) {
+                    if (attendanceData.hasOwnProperty(key)) {
+                        var record = attendanceData[key];
+                        var row = document.createElement('tr');
+
+                        var studentNameCell = document.createElement('td');
+                        studentNameCell.textContent = record.studentName;
+                        row.appendChild(studentNameCell);
+
+                        var timeCell = document.createElement('td');
+                        timeCell.textContent = formatTime(record.timestamp);
+                        row.appendChild(timeCell);
+
+                        var statusCell = document.createElement('td');
+                        statusCell.textContent = record.status;
+                        row.appendChild(statusCell);
+
+                        tableBody.appendChild(row);
+
+                        // Compter les présences par minute
+                        var recordTime = new Date(record.timestamp);
+                        var timeLabel = `${recordTime.getHours().toString().padStart(2, '0')}:${recordTime.getMinutes().toString().padStart(2, '0')}`;
+                        if (!timeSlots[timeLabel]) {
+                            timeSlots[timeLabel] = 0;
+                        }
+                        timeSlots[timeLabel]++;
+                        totalPresences++;
+                    }
+                }
+
+                totalPresencesDiv.textContent = `Nombre total de présences: ${totalPresences}`;
+
+                // Dessiner le graphique
+                drawChart(timeLabels, timeSlots);
+            });
+        }
+
+        // Fonction pour dessiner le graphique
+        function drawChart(labels, data) {
+            var ctx = document.getElementById('attendanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nombre de Présences par Minute',
+                        data: labels.map(label => data[label] || 0),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Minutes',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Nombre de Présences',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fonction pour effacer toutes les présences
+        function clearAttendance() {
+            var database = firebase.database();
+            var attendanceRef = database.ref('attendance');
+
+            attendanceRef.remove()
+                .then(function() {
+                    document.getElementById('attendanceTableBody').innerHTML = ''; // Clear the table body
+                    document.getElementById('attendanceChart').getContext('2d').clearRect(0, 0, 600, 400); // Clear the chart
+                    document.getElementById('totalPresences').textContent = 'Nombre total de présences: 0';
+                    document.getElementById('dateHeader').textContent = '';
+                    alert('Toutes les présences ont été effacées avec succès.');
+                })
+                .catch(function(error) {
+                    console.error('Erreur lors de la suppression des présences : ', error);
+                    alert('Erreur lors de la suppression des présences.');
+                });
+        }
+
+        // Afficher les présences au chargement de la page
+        window.onload = displayAttendance;
+    </script>
+</body>
+</html>

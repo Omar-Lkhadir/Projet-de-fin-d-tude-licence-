@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <div class="content">
+        <form>
+            <div class="head">
+                <a class="flech" href="index.html"> <img src="img/Vector.png" alt="error"></a>
+                <h1>Login</h1>
+            </div>
+            <div class="box">
+                <nav>
+                    <h4 class="titr">Email</h4>
+                    <input class="ecri" type="text" id="email" placeholder="Email">
+                </nav>
+                <nav>
+                    <h4 class="titr">Password</h4>
+                    <input class="ecri" type="password" id="pswd" placeholder="Password">
+                </nav>
+            </div>
+            <div id="error-message" style="color: red;"></div>
+            <br>
+            <input class="submit" type="submit" value="Submit" id="login">
+        </form>
+    </div>
+
+    <style>
+        body {
+            background-color: rgb(255, 255, 255);
+        }
+        * {
+            padding: 0px;
+            margin: 0px;
+            font-family: 'League Spartan';
+        }
+        .content {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(255, 255, 255);
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .head{
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            margin: 10px;
+
+        }
+        .head h1 {
+            color: #2260ff;
+            font-size: 35px;
+            display: flex;
+            justify-content: center;
+            font-size: 40px;
+         
+        }
+        .head img{
+            margin-top: 5px;
+            width: 13px;
+        }
+        .flech{
+            position: relative;
+            right: 120px;
+            margin: 9px;
+        }
+        .box{
+            display: flex;
+            flex-direction: column;
+            margin-top: 200px;
+        }
+        input {
+            background-color: #c5d4ff;
+            border: none;
+            height: 45px;
+            width: 330px;
+            border-radius: 10px;
+            padding-left: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .submit {
+            margin-left: 6px;
+            background-color: #2260ff;
+            color: #ffffff;
+            font-size: 20px;
+            border-radius: 50px;
+        }
+        .submit:hover {
+            background-color: #002c9a;
+            transition: 300ms;
+        }
+        @media (min-width: 450px) {  
+            .box{
+                
+                flex-direction: row;
+            }
+            .box input{
+                margin-left: 20px;
+
+            }
+            .box h4{
+                margin-left: 20px;
+                margin:10px ;
+            }
+            
+            .content .submit{
+                margin-left: 220px;
+            }           
+
+        }
+    </style>
+    <script type="module">
+       
+
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+            authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+            databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+            projectId: "projet-de-fin-d-etude-5f379",
+            storageBucket: "projet-de-fin-d-etude-5f379.appspot.com",
+            messagingSenderId: "819148840374",
+            appId: "1:819148840374:web:c6d0032a611f566937f517"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        document.getElementById("login").addEventListener('click', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("pswd").value;
+            const errorMessage = document.getElementById("error-message");
+
+            if (!email || !password) {
+                errorMessage.textContent = "Email and password are required.";
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                errorMessage.textContent = "Invalid email format.";
+                return;
+            }
+
+            try {
+                // Vérifier si l'utilisateur est inscrit dans la collection "user"
+                const userRef = ref(db, `user/${encodeEmail(email)}`);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+
+                    if (userData.password === password) {
+                        // Connexion réussie
+                        // Stocker les informations utilisateur dans localStorage
+                        localStorage.setItem('user', JSON.stringify(userData));
+                        // Redirection vers la page appropriée
+                        redirectToRolePage(userData.role);
+                    } else {
+                        errorMessage.textContent = "Incorrect password.";
+                    }
+                } else {
+                    errorMessage.textContent = "User not found.";
+                }
+            } catch (error) {
+                console.error("Erreur de connexion:", error);
+                errorMessage.textContent = "Login Failed: " + error.message;
+            }
+        });
+
+        function validateEmail(email) {
+            const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return regex.test(email);
+        }
+
+        function encodeEmail(email) {
+            return email.replace(/\./g, '%2E').replace(/#/g, '%23').replace(/\$/g, '%24').replace(/\[/g, '%5B').replace(/\]/g, '%5D');
+        }
+
+        function redirectToRolePage(role) {
+            try {
+                if (role === 'Student') {
+                    window.location.href = `interface_student/acceuil_student.html`;
+                } else if (role === 'Teacher') {
+                    window.location.href = `interface_techer/acceuil_techer.html`;
+                } else if (role === 'Administrator') {
+                    window.location.href = `interface_admin/acceuil_admin.html`;
+                }
+            } catch (error) {
+                alert("Échec de la redirection : " + error.message);
+            }
+        }
+
+
+    </script>
+</body>
+</html>

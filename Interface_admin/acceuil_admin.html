@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student List</title>
+    <style>
+        body {
+            font-family: 'League Spartan', sans-serif;
+            background-color: rgb(255, 255, 255);
+            margin: 0;
+            padding: 20px;
+            padding: 0;
+        }
+
+
+        .top{
+            background: linear-gradient(to bottom, #0602fa, #b5caff);
+            border-bottom-right-radius: 50px;
+            border-bottom-left-radius: 50px;
+            width: 620px;
+            position: relative;
+            bottom: 10px;
+            right: 0px;
+        }
+        .logo{
+            width: 300px;
+        }
+        .logp{
+            color: rgb(255, 255, 255);
+            background-color: #4e4cec;
+            padding-left : 20px;
+            padding-right : 20px;
+            margin-top: 90px;
+            font-size: 25px;
+            height: 40px;
+            position: relative;
+            right:  30px;
+            top: 15px ;
+            text-decoration: none;
+            border: white 4px solid;
+            border-radius: 60px;
+        }
+        .logp:hover{
+            background-color: #4340fd;
+            transition: 500ms;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+           width: 100%;
+           position: relative;
+           left: 100px;
+           
+            margin: 0 ;
+        }
+
+        h1 {
+            color: #2260ff;
+            font-size: 35px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            
+            width: 100px;
+            
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2260ff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        #absenceChartContainer {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+        canvas {
+            margin-bottom: 100px;
+            width: 900px;
+        }
+
+
+
+        .fout{
+        display: flex;
+        justify-content:space-around;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding-left: 80px;
+        background-color:rgb(168, 160, 177) ;
+        padding: 10px;
+        width: 100%;
+        height: 70px;
+        padding-right: 0px;
+        border-top-right-radius: 60px;
+        border-top-left-radius: 60px;
+
+    }
+    .icon{
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+       
+    }
+    .fout img{
+        width: 60px;
+    }
+    .home{
+        background-color: rgb(255, 255, 255);
+        padding: 15px;
+        position: relative;
+        bottom: 15px;
+        border-radius: 40px;
+        height: 60px;
+    }
+    @media (min-width:750px){
+        .top{
+            width: 100%;
+        }
+        .content{
+            position: relative;
+            left: 0;
+        }
+    }
+
+    </style>
+</head>
+<body>
+
+    
+    <div class="top"> 
+            
+        <img class="logo" src="/img/logo.png" alt="">
+        <a href="/index.html" class="logp" onclick="logout()" > logout </a> 
+
+    </div>
+
+
+
+
+    <div class="content">
+        <h1>Student List</h1>
+        <table id="studentTable">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Absence Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Student data will be populated here -->
+            </tbody>
+        </table>
+        <div id="absenceChartContainer">
+            <canvas id="absenceChart"></canvas>
+        </div>
+    </div>
+
+    <div class="fout">
+        <div class="icon">
+            <a href="gest_certifs.html"><img src="/img/certif.png" alt=""></a>
+            <a class="home" href="acceuil_admin.html"><img src="/img/home.png" alt=""></a>
+        </div>
+    </div>
+
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+            authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+            databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+            projectId: "projet-de-fin-d-etude-5f379",
+            storageBucket: "projet-de-fin-d-etude-5f379",
+            messagingSenderId: "819148840374",
+            appId: "1:819148840374:web:c6d0032a611f566937f517"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Function to retrieve and display student data
+        async function fetchAndDisplayStudents() {
+            const dbRef = db.ref('user');
+            try {
+                const snapshot = await dbRef.once('value');
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
+                    const students = Object.values(users).filter(user => user.role === 'Student');
+                    displayStudents(students);
+                    displayAbsenceChart(students);
+                } else {
+                    console.log("No data available");
+                }
+            } catch (error) {
+                console.error("Error retrieving data:", error);
+            }
+        }
+
+        // Function to display students in the table
+        function displayStudents(students) {
+            const tableBody = document.getElementById('studentTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear any existing data
+
+            students.forEach(student => {
+                const row = tableBody.insertRow();
+                const cellFirstName = row.insertCell(0);
+                const cellLastName = row.insertCell(1);
+                const cellEmail = row.insertCell(2);
+                const cellAbsenceCount = row.insertCell(3);
+
+                cellFirstName.textContent = student.firstName;
+                cellLastName.textContent = student.lastName;
+                cellEmail.textContent = student.email;
+                cellAbsenceCount.textContent = student.absenceCount;
+            });
+        }
+
+        // Function to display absence chart
+        function displayAbsenceChart(students) {
+            const ctx = document.getElementById('absenceChart').getContext('2d');
+            const labels = students.map(student => `${student.firstName} ${student.lastName}`);
+            const data = students.map(student => student.absenceCount);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Absence Count',
+                        data: data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Call the function to fetch and display student data when the page loads
+        window.onload = fetchAndDisplayStudents;
+    </script>
+</body>
+</html>

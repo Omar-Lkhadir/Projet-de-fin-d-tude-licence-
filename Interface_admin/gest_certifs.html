@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afficher les Fichiers de Firebase Storage</title>
+    <style>
+
+        body{
+
+            width: 100%;
+            margin: 0;
+        }
+        .top{
+            background: linear-gradient(to bottom, #0602fa, #b5caff);
+            border-bottom-right-radius: 50px;
+            border-bottom-left-radius: 50px;
+            width: 100%;
+            position: relative;
+            bottom: 10px;
+            right: 0px;
+
+        }
+        .logo{
+            width: 300px;
+        }
+        .logp{
+            color: rgb(255, 255, 255);
+            background-color: #4e4cec;
+            padding-left : 20px;
+            padding-right : 20px;
+            margin-top: 90px;
+            font-size: 25px;
+            height: 40px;
+            position: relative;
+            right:  30px;
+            top: 15px ;
+            text-decoration: none;
+            border: white 4px solid;
+            border-radius: 60px;
+            width: 100%;
+        }
+        .logp:hover{
+            background-color: #4340fd;
+            transition: 500ms;
+        }
+        h1{
+            text-align: center;
+            font-size: 25px;
+            color: #0602fa;
+        }
+        ol {
+            list-style-type: none;
+            padding: 0;
+        
+        }
+        ul{
+            color: red;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        li {
+            margin: 10px 0;
+            list-style-type: decimal;
+        }
+        a {
+            text-decoration: none;
+            color: #1a73e8;
+        }
+
+
+
+        .fout{
+        display: flex;
+        justify-content:space-around;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding-left: 80px;
+        background-color:rgb(168, 160, 177) ;
+        padding: 10px;
+        width: 100%;
+        height: 70px;
+        padding-right: 0px;
+        border-top-right-radius: 60px;
+        border-top-left-radius: 60px;
+
+    }
+    .icon{
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+       
+    }
+    .fout img{
+        width: 60px;
+    }
+    </style>
+</head>
+<body>
+  
+
+    <div class="top"> 
+            
+        <img class="logo" src="/img/logo.png" alt="">
+        <a href="/index.html" class="logp" onclick="logout()" > logout </a> 
+
+    </div>
+
+    <h1>Fichiers Stockés dans Firebase Storage</h1>
+
+    <ul id="fileList"></ul>
+
+    <div class="fout">
+        <div class="icon">
+            <a href="gest_certifs.html"><img src="/img/certif.png" alt=""></a>
+            <a class="home" href="acceuil_admin.html"><img src="/img/home.png" alt=""></a>
+        </div>
+    </div>
+
+
+    <!-- Firebase App (le SDK principal de Firebase) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <!-- Firebase Storage -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+            authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+            databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+            projectId: "projet-de-fin-d-etude-5f379",
+            storageBucket: "projet-de-fin-d-etude-5f379.appspot.com",
+            messagingSenderId: "819148840374",
+            appId: "1:819148840374:web:c6d0032a611f566937f517"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Obtenir une référence au service de stockage
+        const storage = firebase.storage();
+
+        // Fonction pour afficher les fichiers
+        function listFiles() {
+            const storageRef = storage.ref('uploads');
+
+            storageRef.listAll().then((result) => {
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = '';
+
+                result.items.forEach((fileRef) => {
+                    fileRef.getDownloadURL().then((url) => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<a href="${url}" target="_blank">${fileRef.name}</a>`;
+                        fileList.appendChild(listItem);
+                    }).catch((error) => {
+                        console.error('Erreur lors de la récupération de l\'URL du fichier:', error);
+                    });
+                });
+            }).catch((error) => {
+                console.error('Erreur lors de la liste des fichiers:', error.message);
+            });
+        }
+
+document.addEventListener('DOMContentLoaded', listFiles);
+
+
+
+        // Appeler la fonction pour afficher les fichiers lorsque la page est chargée
+        document.addEventListener('DOMContentLoaded', listFiles);
+    </script>
+</body>
+</html>

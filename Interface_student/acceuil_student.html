@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+   <div class="head">
+    
+       
+        <img src="/img/logo.png" alt=""> 
+        <div class="log">
+
+        </div>
+        <a href="/index.html" class="logp" onclick="logout()" > logout </a>        
+          
+    </div>
+    <div class="content">
+
+       
+        <div class="corps">
+            <div id="userDetails">
+           
+                <!-- User details will be displayed here -->
+            </div>
+            <h4> We are delighted to welcome you and offer you a personalized experience.</h4>
+
+        </div> 
+        <div class="fout">
+            <div class="icon">
+                <a href="rec_notif.html"><img src="/img/notif.png" alt=""></a>
+                <a href="scan_code.html"><img src="/img/qr-code.png" alt=""></a>
+                <a class="home" href="acceuil_student.html"><img src="/img/home.png" alt=""></a>
+            </div>
+        </div>
+    </div>
+    
+
+</body>
+</html>
+<style>
+    head a{
+        padding: 100px;
+    }
+   .logp{
+    color: rgb(255, 255, 255);
+    background-color: #0602fa;
+    padding-left : 20px;
+    padding-right : 20px;
+    margin-top: 90px;
+    font-size: 25px;
+    height: 40px;
+    position: relative;
+    right:  120px;
+    top: 15px ;
+    text-decoration: none;
+    border: white 4px solid;
+    border-radius: 60px;
+    z-index: 11;
+   }
+   .logp:hover{
+    background-color: #4340fd;
+    transition: 500ms;
+   }
+    body{
+        height: 100%;
+    }
+ 
+    .content{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 20%;
+    }
+    .head{
+        display: flex;
+        justify-content: flex-start;
+        background: linear-gradient(to bottom, #0602fa, #b5caff);
+        position: relative;
+        right: 10px;
+        bottom: 100px;
+       
+        border-bottom-right-radius:400px;
+        border-bottom-left-radius:0px;
+        height: 400px;
+        width: 100%;
+
+    }
+    
+    .head img{
+        position: relative;
+        right: 100px;
+        padding-right: 60px;
+        bottom: 10px;
+        padding-right: 0px;
+       
+    }
+    #userDetails{
+        font-size:40px;
+        color: #0602fa;
+        margin-top: 5% ;
+    }
+    .corps{
+        margin: 0%;
+        margin-top: 20px;
+    }
+    .corps h1{
+        font-size: 50px;
+        position: relative;
+        bottom: 0px;
+        color: #1d04ff;
+    }
+    .corps{
+        font-size: 20px;
+        position: relative;
+        bottom: 120px;
+        text-align: center;
+    }
+    .fout{
+        display: flex;
+        justify-content:space-around;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding-left: 80px;
+        background-color:rgb(168, 160, 177) ;
+        padding: 10px;
+        width: 100%;
+        height: 70px;
+        padding-right: 0px;
+        border-top-right-radius: 60px;
+        border-top-left-radius: 60px;
+
+    }
+    .icon{
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+       
+    }
+    .fout img{
+        width: 60px;
+    }
+    .home{
+        background-color: rgb(255, 255, 255);
+        padding: 15px;
+        position: relative;
+        bottom: 15px;
+        border-radius: 40px;
+        height: 60px;
+    }
+
+    @media (min-width: 450px){
+        
+        .head {
+            width: 100%;
+            border-radius: 20px;
+            padding-left: 130px;
+            display: flex;
+            justify-content: center;
+            height:100%;
+            padding-bottom: 50px;
+            display: flex;
+            background: linear-gradient(to bottom, #0602fa, #b5caff);
+            position: relative;
+            right: 10px;
+            bottom: 100px;
+            height: 250px;
+            width: 100%;
+
+
+
+        }
+        .head img {
+            background-size:cover;
+            width: 300px;
+            position: relative;
+            top: 120px;
+        }
+        
+        .fout{
+            width: 100%;
+            border-radius: 0px;
+            padding-left: 80px;
+            
+        }
+        .content{
+            height:400px;
+            width: 90%;
+        }
+        .corps{
+            width: 100%;
+            font-size: 60px;
+            margin-left: 10%;
+            
+        }
+        .logp{
+            position: relative;
+            top: 190px;
+            left: 160px;
+        }
+        #userDetails{
+            position: relative;
+            top: 40px;
+        }
+
+    
+
+
+    }
+   
+    
+</style>
+
+<script>
+
+function logout() {
+    // Remove user data from localStorage
+    localStorage.removeItem('user');
+    // Redirect to login page or another appropriate page
+    window.location.href = 'login.html';
+}
+
+
+
+function displayUserDetails() {
+    // Retrieve user data from localStorage
+    const userData = JSON.parse(localStorage.getItem('user'));
+
+    // Check if user data exists
+    if (userData) {
+        const lastName = userData.lastName;
+        const userDetailsDiv = document.getElementById('userDetails');
+        userDetailsDiv.innerHTML = `Welcome, ${lastName}!`;
+        studentName =  userData.lastName;
+    } else {
+        console.log("No user data found in localStorage.");
+    }
+}
+
+// Call the function to display user details when the page loads
+displayUserDetails();
+
+
+</script>

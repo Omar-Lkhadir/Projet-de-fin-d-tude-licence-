@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+  
+    <div class="content">
+
+        <div class="head">
+            <img src="img/logo.png" alt="">
+            
+
+            
+        </div>
+           
+        <div class="baut">
+
+            <div class="fout">
+                
+                <a href="sign_up.html " class="up"> sign up</a> 
+                <a href=" log_in.html " class="in"> log in </a>
+
+            </div>
+        </div>
+      
+    </div>
+    
+</body>
+</html>
+<style>
+ 
+    .content{
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+
+      
+    }
+    .head{
+        display: flex;
+        justify-content: flex-start;
+        background: linear-gradient(to bottom, #0602fa, #b5caff);
+        position: relative;
+        right: 10px;
+        bottom: 10px;
+        width: 450px;
+        border-bottom-right-radius:150px;
+        height: 400px;
+
+
+    }
+    .head img{
+        position: relative;
+        right: 100px;
+        padding-right: 60px;
+        bottom: 10px;
+        padding-right: 0px;
+       
+
+
+    }
+    .baut{
+        display: flex;
+        justify-content: center;
+
+    }
+    .fout{
+        font-size: 30px;
+        display: flex;
+        flex-direction: column;        
+        margin-top: 100px;
+        justify-content: center;
+
+
+    
+    }
+    .fout a{
+        text-decoration: none;
+        font-size: 40px;
+        display: flex;
+        justify-content: center;
+        margin-top: 50;
+        margin: 15px;
+        width: 280px;
+        border-radius: 50px;
+        padding: 5px;
+    }
+    .up{
+        background-color: #2260FF;
+        color: azure;
+    }
+    .up:hover{
+        background-color: #CAD6FF;
+        transition: 200ms;
+        color: #000000;
+    }
+    .in{
+        color: #000000;
+        background-color: #CAD6FF;
+    }
+    .in:hover{
+        background-color: #2260FF;
+        transition: 200ms;
+        color: azure;
+        transition: 200ms;
+
+
+    }
+    @media (min-width: 450px) {  
+        
+        .head{
+            background-color: green;
+            width: 100%;
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;
+            padding-right:20px ;
+            display: flex;
+            justify-content: center;
+        }
+        
+       .fout{
+        margin-top:0% ;
+       }
+
+    }
+
+
+    
+</style>

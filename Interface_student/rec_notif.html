@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Afficher Notifications</title>
+    <!-- Inclure les bibliothèques Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-database-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .top{
+            background: linear-gradient(to bottom, #0602fa, #b5caff);
+            border-bottom-right-radius: 50px;
+            border-bottom-left-radius: 50px;
+            width: 100%;
+            position: relative;
+            bottom: 10px;
+            right: 0px;
+        }
+        .logo{
+        width: 300px;
+         }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 50px;
+            color: #06060a;
+        }
+        .notification-list {
+            margin: 20px;
+            padding: 0;
+            list-style-type: none;
+        }
+      
+        .notification-item {
+            background-color: #d8d7ff;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 60px;
+            border-radius: 40px;
+        }
+
+            
+        .fout{
+            display: flex;
+            justify-content:space-around;
+            position: fixed;
+            background-color:rgb(168, 160, 177) ;                                                                                                                                               
+            padding: 10px;
+            width: 94%;
+            bottom: 0;
+            height: 10%;
+            padding-right: 60px;
+            border-top-right-radius: 120px;
+            border-top-left-radius: 120px;
+
+        }
+      
+        .icon{
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            position: relative;
+            left: 20px;
+            margin-top: 8px;
+        }
+       
+        .dir{
+            width: 00px;
+        }
+      
+      
+       
+        .home{
+            background-color: rgb(255, 255, 255);
+            padding: 15px;
+            position: relative;
+            bottom: 15px;
+            border-radius: 80px;
+            width: 250px;
+            height: 150px;
+            
+        }
+        @media (max-width: 450px){
+            .dir img{
+                width: 400px;
+            }
+        }
+       
+
+        @media (min-width: 450px){
+            .fout{
+                border-radius: 0px;
+
+            }
+
+            .fout a img{
+            width: 60px;
+             }
+            
+            .home{
+                background-color: rgb(255, 255, 255);
+                
+                position: relative;
+                bottom: 15px;
+                border-radius: 80px;
+                width: 60px;
+                height: 60px;
+                
+            }
+        }
+
+    </style>
+    <script>
+        // Votre configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+            authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+            databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+            projectId: "projet-de-fin-d-etude-5f379",
+            storageBucket: "projet-de-fin-d-etude-5f379.appspot.com",
+            messagingSenderId: "819148840374",
+            appId: "1:819148840374:web:c6d0032a611f566937f517"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Fonction pour récupérer et afficher les notifications
+        function afficherNotifications() {
+            const notificationsRef = database.ref('notifications').orderByKey();
+            notificationsRef.on('value', (snapshot) => {
+                const notifications = snapshot.val();
+                const notificationList = document.getElementById('notification-list');
+                notificationList.innerHTML = ''; // Vider la liste avant d'ajouter de nouvelles notifications
+
+                if (notifications) {
+                    // Convertir l'objet en tableau pour pouvoir le trier
+                    const notificationsArray = Object.entries(notifications).reverse();
+
+                    for (const [key, notification] of notificationsArray) {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('notification-item');
+                        listItem.innerHTML = `
+                            <strong classe="titre">Course Canceled</strong><br>
+                            <p>The course of <strong>${notification.module}</strong> which would have been on 
+                            <strong>${notification.date}</strong> at 
+                            <strong>${notification.heure}</strong> has been canceled.</p>
+                        `;
+                        notificationList.appendChild(listItem);
+                    }
+                } else {
+                    notificationList.innerHTML = '<li>Aucune notification disponible.</li>';
+                }
+            });
+        }
+
+        // Appeler la fonction au chargement de la page
+        window.onload = afficherNotifications;
+    </script>
+</head>
+<body>
+    <div class="top"> 
+            
+        <img class="logo" src="/img/logo.png" alt="">
+
+    </div>
+    <h1>List of Notifications : </h1>
+    <ul id="notification-list" class="notification-list"></ul>
+
+    <div class="fout">
+        <div class="icon">
+            <a class="home" href="rec_notif.html"><img  class="dir" src="/img/notif.png" alt=""></a>
+            <a href="scan_code.html"><img  class="dir" src="/img/qr-code.png" alt=""></a>
+            <a  href="acceuil_student.html"><img  class="dir" src="/img/home.png" alt=""></a>
+        </div>
+      
+    </div>
+</body>
+</html>

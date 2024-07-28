@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Scanner de Code QR</title>
+   <style>
+      .container {
+           text-align: center;
+           background-color: #ffffff;
+           padding: 20px;
+           height: 100%;
+       }
+       
+
+       .bac{
+        background-color: #1546e6;
+        border-radius: 20px;
+        color: #fff;
+        padding: 16px;
+        text-decoration: none;
+        font-size: 40px;
+       }
+       .bac:hover{
+        background-color: #0f2981;
+        transition: 550ms;
+
+       }
+
+       #video {
+           width: 100%;
+           max-width: 400px;
+           margin-top: 20px;
+           border: #0c32af solid 2px;
+       }
+       #message {
+           margin-top: 20px;
+           font-size: 18px;
+       }
+
+       .doc{
+        text-decoration: none;
+        color: #fff;
+       }
+
+       /**************************************************e**/
+    .fout{
+        display: flex;
+        justify-content:space-around;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        background-color:rgb(168, 160, 177) ;
+        border-top-right-radius: 60px;
+        border-top-left-radius: 60px;
+       padding-top: 12px;
+        width: 100%;
+        
+    }
+    .icon{
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+      
+        
+    }
+    .fout img{
+        width: 60px;
+    }
+    #video{
+        position: relative;
+        top: 100px;
+    }
+    .home{
+        background-color: rgb(255, 255, 255);
+        padding: 15px;
+        position: relative;
+        bottom: 15px;
+        border-radius: 40px;
+    }
+
+    @media (min-width: 450px){
+    
+        .fout{
+         border-radius: 0%;
+        }
+
+    
+    }
+   </style>
+</head>
+<body>
+  
+    <div class="container">
+      
+        <a href="/Interface_student/certif.html" class="bac">  supporting documents </a>
+     
+        <h1>Scanner de Code QR</h1>
+
+        <!-- modifecation ******************-->
+
+
+        <div id="userDetails">
+           
+            <!-- User details will be displayed here -->
+        </div>
+
+
+        <!-- modifecation ******************-->
+     
+        <video id="video" playsinline></video>
+        <div id="message"></div>
+
+      
+    </div>
+      <div class="fout">
+        <div class="icon">
+            <a href="rec_notif.html"><img src="/img/notif.png" alt=""></a>
+            <a class="home" href="scan_code.html"><img src="/img/qr-code.png" alt=""></a>
+            <a  href="acceuil_student.html"><img src="/img/home.png" alt=""></a>
+        </div>
+   </div>
+</body>
+</html>
+
+<script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+<script>
+   // Configuration Firebase
+   const firebaseConfig = {
+ apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+ authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+ databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+ projectId: "projet-de-fin-d-etude-5f379",
+ storageBucket: "projet-de-fin-d-etude-5f379.appspot.com",
+ messagingSenderId: "819148840374",
+ appId: "1:819148840374:web:c6d0032a611f566937f517"
+};
+  // Initialisation de Firebase
+firebase.initializeApp(firebaseConfig);
+
+
+
+//___*****************************************************
+
+
+function displayUserDetails() {
+    // Retrieve user data from localStorage
+    const userData = JSON.parse(localStorage.getItem('user'));
+
+    // Check if user data exists
+    if (userData) {
+        const lastName = userData.lastName;
+        const userDetailsDiv = document.getElementById('userDetails');
+        userDetailsDiv.innerHTML = `Welcome, ${lastName}!`;
+        studentName =  userData.lastName;
+    } else {
+        console.log("No user data found in localStorage.");
+    }
+}
+
+// Call the function to display user details when the page loads
+displayUserDetails();
+
+
+
+
+//___*****************************************************
+// Initialiser le scanner QR de ZXing
+const codeReader = new ZXing.BrowserQRCodeReader();
+const videoElement = document.getElementById('video');
+
+// Variable pour suivre l'état du scanner
+let scanningActive = true;
+
+// Fonction pour démarrer la caméra et scanner les codes QR
+function startQRCodeScan() {
+    codeReader.decodeFromVideoDevice(null, 'video', (result, err) => {
+        if (result && scanningActive) {
+            const scannedData = result.text;
+            verifyQRCode(scannedData);
+            scanningActive = false; // Arrêter le scanner après un scan réussi
+        }
+        if (err && !(err instanceof ZXing.NotFoundException)) {
+            console.error(err);
+            document.getElementById('message').innerText = `Erreur: ${err}`;
+            document.getElementById('message').style.color = "red";
+        }
+    });
+}
+
+// Démarrer le scan au chargement de la page
+window.onload = function() {
+    displayUserDetails();
+    startQRCodeScan();
+};
+
+// Fonction pour vérifier le QR code scanné
+function verifyQRCode(scannedData) {
+    var database = firebase.database();
+    var qrCodesRef = database.ref('qrCodes');
+
+    qrCodesRef.once('value', function(snapshot) {
+        var qrCodes = snapshot.val();
+        var qrCodeFound = false;
+
+        for (var key in qrCodes) {
+            if (qrCodes[key].content === scannedData) {
+                qrCodeFound = true;
+                var now = new Date();
+
+                // Récupérer les détails de l'utilisateur directement, ou d'une autre manière sécurisée
+               // const studentName = getQueryParam('lastName'); // Remplacer par le nom de l'étudiant récupéré de manière sécurisée
+
+                var attendanceData = {
+                    studentName: studentName,
+                    timestamp: now.toString(),
+                    status: "Présent"
+                };
+
+                var attendanceRef = database.ref('attendance').push();
+                attendanceRef.set(attendanceData)
+                    .then(function() {
+                        document.getElementById('message').innerText = "Présence enregistrée avec succès !";
+                        document.getElementById('message').style.color = "green";
+                        alert("Présence enregistrée avec succès !");
+                    })
+                    .catch(function(error) {
+                        document.getElementById('message').innerText = "Erreur lors de l'enregistrement de la présence.";
+                        document.getElementById('message').style.color = "red";
+                        console.error('Erreur lors de l\'enregistrement de la présence : ', error);
+                    });
+
+                break;
+            }
+        }
+
+        if (!qrCodeFound) {
+            document.getElementById('message').innerText = "QR code non valide.";
+            document.getElementById('message').style.color = "red";
+        }
+    });
+}
+
+// Fonction pour encoder l'email pour une utilisation dans un chemin Firebase valide
+function encodeEmail(email) {
+    return email.replace(/\./g, '%2E').replace(/#/g, '%23').replace(/\$/g, '%24').replace(/\[/g, '%5B').replace(/\]/g, '%5D');
+}
+</script>

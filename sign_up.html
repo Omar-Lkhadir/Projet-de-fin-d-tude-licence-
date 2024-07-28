@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sign_up_2</title>
+</head>
+<body>
+    <div class="content">
+        <form>
+
+            <div class="head">
+                <a href="index.html"> <img src="img/Vector.png" alt="error"></a>
+                <h1>Sign up</h1>
+            </div>
+       
+            <div class="box">
+
+                <nav>
+                    <h4 class="titr">First Name</h4>
+                    <input class="ecri" type="text" value="" id="first_name" placeholder="First Name">
+                </nav>
+                <nav>
+                    <h4 class="titr" >Last Name</h4>
+                    <input class="ecri" type="text" value="" id="last_name" placeholder="Last Name">
+                </nav>
+                <nav>
+                    <h4 class="titr">Institutional Email</h4>
+                    <input class="ecri" type="text" value="" id="email" placeholder="prenom_nom@um5.ac.ma" >
+                </nav>
+                <nav>
+                    <h4 class="titr">Password</h4>
+                    <input class="ecri" type="password" value="" id="pswd" placeholder="************" >
+                </nav>
+                <nav>
+                    <h4 class="titr">Confirm Password</h4>
+                    <input type="password" value="" id="pswd_confrm" placeholder="************" >
+
+                </nav>
+
+                <label class="titr" for="role"> <h4 >Role: </h4></label>
+                <br>
+                <select id="role" name="role">
+                    <option value="Student">Student</option>
+                    <option value="Teacher">Teacher</option>
+                    <option value="Administrator">Administrator</option>
+                </select>
+            </div>
+
+            <br><br>
+            <input class="submit" type="submit" value="Submit" id="submit">
+        </form>
+    </div>
+   
+</body>
+</html>
+
+<style>
+/*   2778 x 1284 pixels  */
+/*  1170px × 2532px*/
+body{
+   background-color: rgb(255, 255, 255);
+
+}
+
+*{
+    padding: 0px;
+    margin: 0px;
+    font-family: 'League Spartan';
+}
+h4{
+    margin-left:12px ;
+}
+
+.content{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255, 255, 255);
+    
+}
+form{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+
+
+}
+.head{
+    margin: 10px;
+    display: flex;
+    justify-content: left;
+
+}
+.head h1{
+    color: #2260ff;
+    font-size: 35px;
+    margin-left: 90px;
+
+}
+.head a{
+    
+    margin-top: 10px;
+}
+.head a img{
+    width: 12PX;
+}
+
+input{
+
+    background-color: #c5d4ff;
+    border: none;
+    height: 45px;
+    width: 330px;
+    border-radius: 10px;
+    padding-left: 10px
+}
+.titr{
+    font-size: 17px;
+    margin: 12px;
+    
+}
+
+select{
+    background-color: #c5d4ff;
+    border: none;
+    height: 45px;
+    width: 340px;
+    border-radius: 10px;
+    padding-left: 10px;
+    position: relative;
+    bottom: 10px;
+    
+}
+
+.submit{
+
+    margin-left: 6px;
+    background-color: #2260ff;
+    color: #ffffff;
+    font-size: 20px;
+    border-radius: 50px;
+}
+
+.submit:hover{
+    background-color: #002c9a;
+    transition: 300ms;
+
+}
+
+@media (min-width: 450px){
+    
+}
+
+
+</style>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import { getDatabase, ref, set, child, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBTCoF_902G_lNqxL2m3HDasrrYaeXAP48",
+    authDomain: "projet-de-fin-d-etude-5f379.firebaseapp.com",
+    databaseURL: "https://projet-de-fin-d-etude-5f379-default-rtdb.firebaseio.com",
+    projectId: "projet-de-fin-d-etude-5f379",
+    storageBucket: "projet-de-fin-d-etude-5f379",
+    messagingSenderId: "819148840374",
+    appId: "1:819148840374:web:c6d0032a611f566937f517"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Function to encode email to a valid Firebase path
+function encodeEmail(email) {
+    return email.replace(/\./g, '%2E').replace(/#/g, '%23').replace(/\$/g, '%24').replace(/\[/g, '%5B').replace(/\]/g, '%5D');
+}
+
+// Function to validate email format
+function validateEmail(email) {
+    const regexUM5 = /^[a-zA-Z0-9]+_[a-zA-Z0-9]+@um5\.ac\.ma$/;
+    const regexGmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    return {
+        isValid: regexUM5.test(email) || regexGmail.test(email),
+        error: regexUM5.test(email) || regexGmail.test(email) ? '' : 'Invalid email format. Please use  @gmail.com email.'
+    };
+}
+
+// Function to check if email already exists in Firebase
+async function checkEmailExists(email) {
+    const emailRef = ref(db, `user/${encodeEmail(email)}`);
+    try {
+        const snapshot = await get(emailRef);
+        return snapshot.exists();
+    } catch (error) {
+        console.error("Error checking email existence:", error);
+        return false; // Assuming email does not exist if there's an error
+    }
+}
+
+document.getElementById("submit").addEventListener('click', async function(e) {
+    e.preventDefault(); // Prevent form from submitting
+    const firstName = document.getElementById("first_name").value;
+    const lastName = document.getElementById("last_name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("pswd").value;
+    const confirmPassword = document.getElementById("pswd_confrm").value;
+    const role = document.getElementById('role').value;
+
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+        alert(emailValidation.error);
+        return;
+    }
+
+    if (!firstName || !lastName || !email || !password || !confirmPassword || !role) {
+        alert("All fields are required. Please fill in all fields.");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert("Passwords do not match. Please try again.");
+        return;
+    }
+
+    // Check if email already exists
+    const emailExists = await checkEmailExists(email);
+    if (emailExists) {
+        alert("Email already registered. Please use a different email.");
+        return;
+    }
+
+    const encodedEmail = encodeEmail(email);
+    let userData = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+        role: role
+    };
+
+    // Add absenceCount for students
+    if (role === 'Student') {
+        userData.absenceCount = 0; // Initialize absence count
+    }
+
+    // Save data to Firebase
+    set(ref(db, `user/${encodedEmail}`), userData)
+    .then(() => {
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(userData));
+        alert("Operation Successful!");
+        redirectToRolePage(role); // Redirige sans paramètre
+    })
+    .catch((error) => {
+        alert("Operation Failed: " + error.message);
+    });
+});
+
+function redirectToRolePage(role) {
+    try {
+        if (role === 'Student') {
+            window.location.href = `interface_student/acceuil_student.html`;
+        } else if (role === 'Teacher') {
+            window.location.href = `interface_techer/acceuil_techer.html`;
+        } else if (role === 'Administrator') {
+            window.location.href = `interface_admin/acceuil_admin.html`;
+        }
+    } catch (error) {
+        alert("Échec de la redirection : " + error.message);
+    }
+}
+
+</script>
+  
